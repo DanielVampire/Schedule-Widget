@@ -1,0 +1,144 @@
+﻿<Window x:Class="ScheduleWidget.ViewModels.SelectWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ScheduleWidget.ViewModels"
+        mc:Ignorable="d"
+        Title="SelectWindow" Height="160" Width="400" WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" AllowsTransparency="True">
+    <Window.Template>
+        <ControlTemplate TargetType="Window">
+            <Border CornerRadius="50" Opacity="1" Background="DarkGray">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Border Grid.Row="1">
+                        <AdornerDecorator>
+                            <ContentPresenter/>
+                        </AdornerDecorator>
+                    </Border>
+                </Grid>
+            </Border>
+        </ControlTemplate>
+    </Window.Template>
+    <Window.Resources>
+        <Style TargetType="{x:Type Button}" x:Key="AcceptButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bord"  Background="LightGreen" CornerRadius="20" BorderThickness="1" BorderBrush="Black">
+                            <TextBlock Text="Accept" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bord" Property="Border.Background">
+                                    <Setter.Value>
+                                        <SolidColorBrush Color="LawnGreen"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bord" Property="Border.Background">
+                                    <Setter.Value>
+                                        <SolidColorBrush Color="DarkGreen"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type Button}" x:Key="CancelButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bord"  Background="PaleVioletRed" CornerRadius="20" BorderThickness="1" BorderBrush="Black">
+                            <TextBlock Text="Cancel" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bord" Property="Border.Background">
+                                    <Setter.Value>
+                                        <SolidColorBrush Color="Red"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bord" Property="Border.Background">
+                                    <Setter.Value>
+                                        <SolidColorBrush Color="DarkRed"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <SolidColorBrush x:Key="TextBox.Static.Border" Color="#FFABAdB3"/>
+        <SolidColorBrush x:Key="TextBox.MouseOver.Border" Color="#FF7EB4EA"/>
+        <SolidColorBrush x:Key="TextBox.Focus.Border" Color="#FF569DE5"/>
+        <Style x:Key="TextBoxStyle" TargetType="{x:Type TextBox}">
+            <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource TextBox.Static.Border}"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="AllowDrop" Value="true"/>
+            <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
+            <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Border x:Name="border" BorderBrush="Black" BorderThickness="1" Background="AliceBlue" SnapsToDevicePixels="True" CornerRadius="20">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Opacity" TargetName="border" Value="0.56"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBox.MouseOver.Border}"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBox.Focus.Border}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsInactiveSelectionHighlightEnabled" Value="true"/>
+                        <Condition Property="IsSelectionActive" Value="false"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="SelectionBrush" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}"/>
+                </MultiTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition ></RowDefinition>
+            <RowDefinition Height="2*"></RowDefinition>
+            <RowDefinition ></RowDefinition>
+        </Grid.RowDefinitions>
+        <Label Content="Please enter the following values" Grid.Row="0" FontSize="16" FontWeight="Bold" Grid.ColumnSpan="2" HorizontalAlignment="Center"></Label>
+        <Label Content="Count Row" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" FontSize="14"></Label>
+        <TextBox PreviewTextInput="rows_PreviewTextInput" x:Name="rows" Grid.Row="1" Grid.Column="0"  VerticalAlignment="Center" Margin="5 15 5 0" Height="20" Style="{DynamicResource TextBoxStyle}" ></TextBox>
+        <Label Content="Count Elements" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" FontSize="14"></Label>
+        <TextBox PreviewTextInput="elements_PreviewTextInput" x:Name="elements" Grid.Row="1" Grid.Column="1"  VerticalAlignment="Center" Margin="5 15 5 0" Height="20" Style="{DynamicResource TextBoxStyle}"></TextBox>
+        <Button IsDefault="True" x:Name="Select" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource AcceptButton}" Click="Select_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100" Height="40" Margin="40 0 0 0" />
+        <Button IsCancel="True" x:Name="Cancel" Grid.Column="1" Grid.Row="2" Style="{StaticResource CancelButton}" VerticalAlignment="Center" HorizontalAlignment="Right" Width="100" Height="40" Margin="0 0 20 0"  />
+    </Grid>
+</Window>
