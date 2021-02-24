@@ -7,10 +7,9 @@
         xmlns:can="clr-namespace:ScheduleWidget.Models"
         mc:Ignorable="d"
         Title="Schedule Widget" Height="600" Width="1000" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" Background="Transparent" AllowsTransparency="True" Margin="0">
-    <Window.Resources>
-
-    </Window.Resources>
     <Window.Template>
+        <!--Шаблон управления окна-->
+                <!--начало-->
         <ControlTemplate TargetType="Window">
             <Border CornerRadius="50" Opacity="1" Background="#292727">
                 <Grid>
@@ -18,7 +17,7 @@
                         <RowDefinition Height="Auto"></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
-                    <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1" Background="#748bb3" CornerRadius="40 40 15 15" Margin="10 0 10 0" MouseLeftButtonDown="TextBlock_MouseLeftButtonDown">
+                    <Border Grid.Row="0" BorderBrush="Black" BorderThickness="1" Background="#748bb3" CornerRadius="40 40 15 15" Margin="10 0 10 0" MouseLeftButtonDown="frame_MouseLeftButtonDown">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition></ColumnDefinition>
@@ -38,11 +37,13 @@
                 </Grid>
             </Border>
         </ControlTemplate>
+                <!--конец-->
     </Window.Template>
     <Grid Margin="25,5,5,15">
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
+        <!--Основной элемент прокрутки-->
         <ScrollViewer x:Name="Scroll" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" CanContentScroll="True" Grid.Row="0" ScrollChanged="ScrollViewer_ScrollChanged" Margin="-10,-5,10,0" SnapsToDevicePixels="True" Template="{DynamicResource ScrollViewerControlTemplate1}" >
             <Grid >
                 <Grid.RowDefinitions>
@@ -50,14 +51,18 @@
                     <RowDefinition Height="35" MaxHeight="35"></RowDefinition>
                     <RowDefinition Height="1*"></RowDefinition>
                 </Grid.RowDefinitions>
+                <!--Линия, отображающаяся при нажатии на слайдер-->
                 <Polygon x:Name="line" Fill="Yellow" Stroke="Black" SnapsToDevicePixels="True" Visibility="Hidden" Panel.ZIndex="2" Grid.Row="0" Grid.RowSpan="3" />
+                <!--Треугольник для линии, отображающейся при нажатии на слайдер-->
                 <Polygon x:Name="triangle"  Fill="Yellow" Stroke="Black" SnapsToDevicePixels="True" Visibility="Hidden" Panel.ZIndex="2" Grid.Row="0"/>
+                <!--Блок для слайдера и текущей даты-->
                 <Border Grid.Row="0" x:Name="sliderPanel" CornerRadius="5 5 0 0" Background="DarkGray" Panel.ZIndex="1" Height="45" >
                     <Canvas Panel.ZIndex="1" Width="4007" Opacity="1">
-                    <Label x:Name="Data" VerticalAlignment="Top" Canvas.Top="-7" Canvas.Left="5" HorizontalAlignment="Left" Panel.ZIndex="2" FontSize="14" FontWeight="Bold" ></Label>
+                        <Label x:Name="Date" VerticalAlignment="Top" Canvas.Top="-7" Canvas.Left="5" HorizontalAlignment="Left" Panel.ZIndex="2" FontSize="14" FontWeight="Bold" ></Label>
                         <Slider x:Name="slide" VerticalAlignment="Top" Canvas.Top="5" Margin="-1 0 0 0" IsMoveToPointEnabled="True" TickFrequency="5" TickPlacement="Both" Background="DarkGray"  Maximum="100" Panel.ZIndex="1" ValueChanged="slide_ValueChanged" Height="40"  Width="4000" Style="{DynamicResource SliderStyle1}"></Slider>
-                </Canvas>
+                    </Canvas>
                 </Border>
+                <!--Информационный блок с кнопкой генерации-->
                 <Border BorderThickness="0 0.5 0 0.5" BorderBrush="Black" Margin="0 0 0 0" x:Name="panel" Panel.ZIndex="1" Grid.Row="1" Height="35" Background="LightGray">
                     <StackPanel Orientation="Horizontal" CanHorizontallyScroll="False">
                         <Line X1="16.5" Y1="0" X2="16.5" Y2="34.8" Stroke="Black" StrokeThickness="0.5" Opacity="0.3"></Line>
@@ -70,25 +75,26 @@
                         <Button x:Name="GenerateBut"  VerticalAlignment="Center" Margin="520 0 0 0" Style="{DynamicResource GenerateButton}" Click="GenerateBut_Click" SnapsToDevicePixels="True"/>
                     </StackPanel>
                 </Border>
-                <Border Background="#323a4a" Grid.Row="2"></Border>
-                <Canvas Grid.Row="2" x:Name="Table" Margin="16,0,16,0" SnapsToDevicePixels="True" Width="4000" VerticalAlignment="Top" >
-                    <Canvas.Background>
-                        <DrawingBrush Viewport="1,0,200,40" ViewportUnits="Absolute" TileMode="Tile">
-                            <DrawingBrush.Drawing>
-                                <GeometryDrawing Brush="Black">
-                                    <GeometryDrawing.Geometry>
-                                        <GeometryGroup FillRule="EvenOdd">
-                                            <RectangleGeometry Rect="0,0,50,50" />
-                                            <RectangleGeometry Rect="0,0,49.5,49.5" />
-                                        </GeometryGroup>
-                                    </GeometryDrawing.Geometry>
-                                </GeometryDrawing>
-                            </DrawingBrush.Drawing>
-                        </DrawingBrush>
-                    </Canvas.Background>
-                </Canvas>
+                <!--Полотно для таблицы-->
+                <Border Background="#323a4a" Grid.Row="2">
+                    <Canvas x:Name="Table" Margin="16,0,16,0" SnapsToDevicePixels="True" Width="4000" VerticalAlignment="Top" >
+                        <Canvas.Background>
+                            <DrawingBrush Viewport="1,0,200,40" ViewportUnits="Absolute" TileMode="Tile">
+                                <DrawingBrush.Drawing>
+                                    <GeometryDrawing Brush="Black">
+                                        <GeometryDrawing.Geometry>
+                                            <GeometryGroup FillRule="EvenOdd">
+                                                <RectangleGeometry Rect="0,0,50,50" />
+                                                <RectangleGeometry Rect="0,0,49.5,49.5" />
+                                            </GeometryGroup>
+                                        </GeometryDrawing.Geometry>
+                                    </GeometryDrawing>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Canvas.Background>
+                    </Canvas>
+                </Border>
             </Grid>
-
         </ScrollViewer>
     </Grid>
 

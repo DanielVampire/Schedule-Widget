@@ -7,6 +7,8 @@
         mc:Ignorable="d"
         Title="SelectWindow" Height="160" Width="400" WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" AllowsTransparency="True">
     <Window.Template>
+        <!--Шаблон управления окна-->
+                <!--начало-->
         <ControlTemplate TargetType="Window">
             <Border CornerRadius="50" Opacity="1" Background="DarkGray">
                 <Grid>
@@ -22,8 +24,11 @@
                 </Grid>
             </Border>
         </ControlTemplate>
+                <!--конец-->
     </Window.Template>
     <Window.Resources>
+        <!--Стиль кнопки "ОК" (Accept)-->
+                <!--начало-->
         <Style TargetType="{x:Type Button}" x:Key="AcceptButton">
             <Setter Property="Template">
                 <Setter.Value>
@@ -51,6 +56,9 @@
                 </Setter.Value>
             </Setter>
         </Style>
+                <!--конец-->
+        <!--Стиль кнопки "Отмена" (Cancel)-->
+                <!--начало-->
         <Style TargetType="{x:Type Button}" x:Key="CancelButton">
             <Setter Property="Template">
                 <Setter.Value>
@@ -78,6 +86,9 @@
                 </Setter.Value>
             </Setter>
         </Style>
+                <!--конец-->
+        <!--Стиль для текстовых полей-->
+                <!--начало-->
         <SolidColorBrush x:Key="TextBox.Static.Border" Color="#FFABAdB3"/>
         <SolidColorBrush x:Key="TextBox.MouseOver.Border" Color="#FF7EB4EA"/>
         <SolidColorBrush x:Key="TextBox.Focus.Border" Color="#FF569DE5"/>
@@ -122,6 +133,7 @@
                 </MultiTrigger>
             </Style.Triggers>
         </Style>
+                <!--конец-->
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -134,11 +146,15 @@
             <RowDefinition ></RowDefinition>
         </Grid.RowDefinitions>
         <Label Content="Please enter the following values" Grid.Row="0" FontSize="16" FontWeight="Bold" Grid.ColumnSpan="2" HorizontalAlignment="Center"></Label>
+        <!--Заголовок и поле для ввода количества строк-->
         <Label Content="Count Row" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" FontSize="14"></Label>
-        <TextBox PreviewTextInput="rows_PreviewTextInput" x:Name="rows" Grid.Row="1" Grid.Column="0"  VerticalAlignment="Center" Margin="5 15 5 0" Height="20" Style="{DynamicResource TextBoxStyle}" ></TextBox>
+        <TextBox PreviewTextInput="rows_PreviewTextInput" x:Name="rows" Grid.Row="1" Grid.Column="0"  VerticalAlignment="Center" Margin="5 15 5 0" Height="20" Style="{StaticResource TextBoxStyle}" ></TextBox>
+        <!--Заголовок и поле для ввода количества элементов-->
         <Label Content="Count Elements" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" FontSize="14"></Label>
-        <TextBox PreviewTextInput="elements_PreviewTextInput" x:Name="elements" Grid.Row="1" Grid.Column="1"  VerticalAlignment="Center" Margin="5 15 5 0" Height="20" Style="{DynamicResource TextBoxStyle}"></TextBox>
+        <TextBox PreviewTextInput="elements_PreviewTextInput" x:Name="elements" Grid.Row="1" Grid.Column="1"  VerticalAlignment="Center" Margin="5 15 5 0" Height="20" Style="{StaticResource TextBoxStyle}"></TextBox>
+        <!--Кнопка ОК (Accept)-->
         <Button IsDefault="True" x:Name="Select" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource AcceptButton}" Click="Select_Click" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100" Height="40" Margin="40 0 0 0" />
+        <!--Кнопка Отмена (Cancel)-->
         <Button IsCancel="True" x:Name="Cancel" Grid.Column="1" Grid.Row="2" Style="{StaticResource CancelButton}" VerticalAlignment="Center" HorizontalAlignment="Right" Width="100" Height="40" Margin="0 0 20 0"  />
     </Grid>
 </Window>

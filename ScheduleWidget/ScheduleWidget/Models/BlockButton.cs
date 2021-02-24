@@ -1,24 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace ScheduleWidget.Models
 {
+    //Наследуемый класс от Button для добавления нужных параметров
     public class BlockButton : Button, IDisposable, INotifyPropertyChanged
     {
+        #region private properties
         private int startTime { get; set; }
         private int endTime { get; set; }
         private int row { get; set; }
+        #endregion
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public BlockButton()
-        {
-        }
+        #region public properties
         public int Row
         {
             get { return row; }
@@ -46,6 +41,17 @@ namespace ScheduleWidget.Models
                 OnPropertyChanged("EndTime");
             }
         }
+        public event PropertyChangedEventHandler PropertyChanged;
+        #endregion
+
+        #region public constructor
+        public BlockButton()
+        {
+
+        }
+        #endregion
+
+        #region public methods
         public void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
@@ -55,5 +61,6 @@ namespace ScheduleWidget.Models
         {
             throw new NotImplementedException();
         }
+        #endregion
     }
 }

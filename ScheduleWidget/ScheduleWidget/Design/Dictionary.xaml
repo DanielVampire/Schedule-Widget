@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:ScheduleWidget"
                     xmlns:model="clr-namespace:ScheduleWidget.Models">
-    
+    <!--Стиль для кнопки закрытия приложения-->
+            <!--начало-->
     <Style TargetType="{x:Type Button}" x:Key="CloseButton">
         <Setter Property="Template">
             <Setter.Value>
@@ -22,6 +23,9 @@
             </Setter.Value>
         </Setter>
     </Style>
+            <!--конец-->
+    <!--Стиль для кнопки генерации-->
+            <!--начало-->
     <Style TargetType="{x:Type Button}" x:Key="GenerateButton">
         <Setter Property="Width" Value="130"/>
         <Setter Property="Height" Value="25"/>
@@ -53,6 +57,9 @@
             </Setter.Value>
         </Setter>
     </Style>
+            <!--конец-->
+    <!--Стили и шаблоны управления для слайдера (линейки)-->
+            <!--начало-->
     <SolidColorBrush x:Key="SliderThumb.Static.Foreground" Color="Black"/>
     <SolidColorBrush x:Key="SliderThumb.MouseOver.Background" Color="#FFDCECFC"/>
     <SolidColorBrush x:Key="SliderThumb.MouseOver.Border" Color="#FF7Eb4EA"/>
@@ -192,6 +199,9 @@
         <Setter Property="Foreground" Value="{StaticResource SliderThumb.Static.Foreground}"/>
         <Setter Property="Template" Value="{StaticResource SliderHorizontal}"/>
     </Style>
+            <!--конец-->
+    <!--Стили и шаблоны управления для элемента прокрутки (ScrollViewer)-->
+            <!--начало-->
     <Style x:Key="ScrollBarLineButton"
        TargetType="{x:Type RepeatButton}">
         <Setter Property="SnapsToDevicePixels"
@@ -362,4 +372,5 @@
             <ScrollBar Style="{StaticResource ScrollBarStyle}" x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="1" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}"/>
         </Grid>
     </ControlTemplate>
+            <!--конец-->
 </ResourceDictionary>

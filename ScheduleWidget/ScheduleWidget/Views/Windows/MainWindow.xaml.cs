@@ -1,19 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
 using Bitlush;
 using ScheduleWidget.Models;
 using ScheduleWidget.ViewModels;
@@ -25,30 +17,41 @@ namespace ScheduleWidget
     /// </summary>
     public partial class MainWindow : Window
     {
-        private AvlTree<int, BlockButton> tree;
-        private int CountRows { get; set; }
-        private int CountElements { get; set; }
-        List<Tuple<int, int, int>> NumberForButtons;
+        #region private properties
+        private MainWindowModel model;
+        #endregion
+
+        #region public constructor
         public MainWindow()
         {
             InitializeComponent();
-            Data.Content = DateTime.Now.ToString("MMM dd ddd");
-            CountRows = Convert.ToInt32(Table.ActualHeight) / 40;
-            CountElements = 0;
+            Date.Content = DateTime.Now.ToString("MMM dd ddd");
+            model = new MainWindowModel();
         }
+        #endregion
 
+        #region private events
+        /*
+         * Ивент при изменении значения слайдера.
+         * В месте нажатия мышки по области слайдера - рисует полоску
+         */
         private void slide_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            double xValRatio = slide.Value / (slide.Maximum - slide.Minimum); //gets % the thumb is across the slider
-            double thumbPos = xValRatio * (slide.ActualWidth); //gets the absolute position
+            double xValRatio = (slide.Value+0.45) / (slide.Maximum - slide.Minimum); // % поля, который прошел ползунок
+            double thumbPos = xValRatio * (slide.ActualWidth); // абсолютная позиция ползунка
+
             line.Visibility = Visibility.Visible;
             triangle.Visibility = Visibility.Visible;
+
+            //Создание точек для линии
             PointCollection points = new PointCollection();
             points.Add(new Point(thumbPos - 2, 11));
             points.Add(new Point(thumbPos - 2, Scroll.ViewportHeight-1));
             points.Add(new Point(thumbPos + 2, Scroll.ViewportHeight-1));
             points.Add(new Point(thumbPos + 2, 11));
             line.Points = points;
+
+            //Создание точек для треугольника
             points = new PointCollection();
             points.Add(new Point(thumbPos - 10, 1));
             points.Add(new Point(thumbPos, 13));
@@ -56,6 +59,11 @@ namespace ScheduleWidget
             triangle.Points = points;
         }
 
+        /*
+         * Ивент изменения значения у прокрутки
+         * Используется для того, чтобы поле с линейкой и 
+         * информацией находилось сверху, когда происходит прокрутика
+         */
         private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             sliderPanel.Margin = new Thickness(0, e.VerticalOffset, 0, -e.VerticalOffset);
@@ -64,90 +72,75 @@ namespace ScheduleWidget
             triangle.Margin = new Thickness(0, e.VerticalOffset, 0, -e.VerticalOffset);
         }
 
+        /*
+         * ивент нажатия на кнопку генерации
+         */
         async private void GenerateBut_Click(object sender, RoutedEventArgs e)
         {
+            //вызываю диалоговое окно
             SelectWindow select = new SelectWindow();
             select.Owner = this;
             if (select.ShowDialog() == true)
             {
-                CountElements = select.countElements;
-                CountRows = select.countRows;
-                Table.Height = Convert.ToDouble(CountRows * 40);
+                //записываю введенные данные
+                model.CountElements = select.countElements;
+                model.CountRows = select.countRows;
+                Table.Height = Convert.ToDouble(model.CountRows * 40);
             }
             else
                 return;
             await Task.Run(() =>
             {
-                GeneratorNumbers(Table.ActualWidth);
+                //запускается метод генерации чисел в отдельном потоке. Основной поток ждет
+                model.GeneratorNumbers(Table.ActualWidth);
             });
+            //Метод создания объектов в таблице, используя сгенерированные числа
             CreateButtons();
         }
-        private void GeneratorNumbers(double Width)
-        {
-            int count = CountElements;
-            Console.WriteLine("Count need: " + count);
-            List<Tuple<int, int, int>> numbers = new List<Tuple<int, int, int>>();
-            Random rand = new Random(unchecked((int)DateTime.Now.Ticks));
-            while (count != 0)
-            {
-                
-                bool isNew = true;
-                int startTime = rand.Next(0, Convert.ToInt32(Width - 10));
-                int endTime = rand.Next(10, 400)+startTime;
-                if (endTime > Width)
-                    endTime = Convert.ToInt32(Width) - 2;
-                int row = rand.Next(0, CountRows) * 40;
-                if (numbers.Count == 0)
-                    numbers.Add(new Tuple<int, int, int>(startTime, endTime, row));
-                else
-                {
-                    foreach (var tuple in numbers)
-                    {
-                        if (startTime <= tuple.Item1 && tuple.Item3 == row)
-                        {
-                            for (int i = startTime; i <= endTime; i++)
-                            {
-                                if (i == tuple.Item1)
-                                {
-                                    isNew = false;
-                                    break;
-                                }
-                            }
-                        }
-                        else if (tuple.Item1 <= startTime && tuple.Item3 == row)
-                        {
-                            for (int i = tuple.Item1; i <= tuple.Item2; i++)
-                            {
-                                if (i == startTime)
-                                {
-                                    isNew = false;
-                                    break;
-                                }
-                            }
-                        }
 
-                    }
-                }
-                if (isNew)
-                    numbers.Add(new Tuple<int, int, int>(startTime, endTime, row));
-                count--;
-            }
-            Console.WriteLine("Count real: " + numbers.Count);
-            NumberForButtons = numbers;
+        /*
+         * ивент нажатия на объект в таблице
+         */
+        private void Button_Click1(object sender, RoutedEventArgs e)
+        {
+            var but = (BlockButton)sender;
+            MessageBox.Show(String.Format("StartTime: {0}\nEndTime: {1}\nDescription: {2}", but.StartTime, but.EndTime, but.Content));
         }
 
+        /*
+         * ивент перетаскивания главного окна (верхняя панель)
+         */
+        private void frame_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
+
+        /*
+         * ивент кнопки, закрывающей приложение
+         */
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        #endregion
+
+        #region private methods
+
+        /*
+         * Метод для добавления объектов в таблице
+         */
         private void CreateButtons()
         {
-            //Сделать крч проверку что если объектов нет, то создаем их новые, если есть, то ходим и заменяем значения
-            //если сгенерированных больше, то добавляем новые элементы
-            //если сгенерированных меньше - удаляем лишние
-            //на словах вроде просто
             Random rand = new Random(unchecked((int)DateTime.Now.Ticks));
+
+            //проверка на существующие объекты
             if (Table.Children.Count == 0)
             {
                 int treeIndex = 0;
-                tree = new AvlTree<int, BlockButton>();
-                foreach (var data in NumberForButtons)
+
+                //цикл, по которому сгенерированные данные добавляются в кнопку и размещаются в таблице
+                foreach (var data in model.NumberForButtons)
                 {
                     BlockButton button = new BlockButton()
                     {
@@ -162,73 +155,79 @@ namespace ScheduleWidget
                         Row = data.Item3
                     };
                     button.Click += Button_Click1;
-                    tree.Insert(treeIndex, button);
-                    Canvas.SetTop(tree.Last().Value, data.Item3);
-                    Canvas.SetLeft(tree.Last().Value, data.Item1);
-                    Table.Children.Add(tree.Last().Value);
+                    model.Tree.Insert(treeIndex, button);
+
+                    //задаем верхнюю левую точку объекта на полотне
+                    Canvas.SetTop(model.Tree.Last().Value, data.Item3);
+                    Canvas.SetLeft(model.Tree.Last().Value, data.Item1);
+
+                    Table.Children.Add(model.Tree.Last().Value);
                     treeIndex++;
                 }
             }
             else
             {
+                //Если объекты уже существуют
                 Table.Children.Clear();
-                int countExistElem = tree.Count();
-                int countNewElem = NumberForButtons.Count;
-                int difference = countNewElem - countExistElem <=0 ? 0 : countNewElem - countExistElem;
+
+                //количетсво существующих объектов
+                int countExistElem = model.Tree.Count();
+                //количество новых объектов
+                int countNewElem = model.NumberForButtons.Count;
+                //разница между количеством существующих и новых элементов
+                int difference = countNewElem - countExistElem <= 0 ? 0 : countNewElem - countExistElem;
+
+                //если новых объектов больше
                 if (countExistElem < countNewElem)
                 {
+                    //добавляем недостающее количество в дерево
                     while(countExistElem != countNewElem)
-                    { 
-                        tree.Insert(countExistElem, new BlockButton());
+                    {
+                        model.Tree.Insert(countExistElem, new BlockButton());
                         countExistElem++;
                     }
                 }
+                //иначе
                 else if(countExistElem > countNewElem)
                 {
+                    //удаляем из дерева лишнии
                     while(countExistElem != countNewElem)
                     {
                         countExistElem--;
-                        tree.Delete(countExistElem);
+                        model.Tree.Delete(countExistElem);
                     }
                 }
-                    for (int i = 0; i < tree.Count(); i++)
+                //цикл, по которому идет переопределение данных и вывод объектов в таблицу
+                for (int i = 0; i < model.Tree.Count(); i++)
+                {
+                    model.Tree.ElementAt(i).Value.Content = rand.Next(0, 5000);
+                    model.Tree.ElementAt(i).Value.StartTime = model.NumberForButtons[i].Item1;
+                    model.Tree.ElementAt(i).Value.Width = model.NumberForButtons[i].Item2 - model.NumberForButtons[i].Item1;
+                    model.Tree.ElementAt(i).Value.EndTime = model.NumberForButtons[i].Item2;
+                    model.Tree.ElementAt(i).Value.Row = model.NumberForButtons[i].Item3;
+                    model.Tree.ElementAt(i).Value.Height = 40;
+                    model.Tree.ElementAt(i).Value.Opacity = 0.7d;
+                    model.Tree.ElementAt(i).Value.BorderThickness = new Thickness(1, 1, 1, 1);
+                    model.Tree.ElementAt(i).Value.EndTime = model.NumberForButtons[i].Item2;
+                    model.Tree.ElementAt(i).Value.Row = model.NumberForButtons[i].Item3;
+
+                    //проверка на новые объекты. Если в дерево нужно было добавить новые объекты, 
+                    //то только для них нужно определить метод для ивента click
+                    if (model.Tree.Count() - difference == i && difference != 0)
                     {
-                        tree.ElementAt(i).Value.Content = rand.Next(0, 5000);
-                        tree.ElementAt(i).Value.StartTime = NumberForButtons[i].Item1;
-                        tree.ElementAt(i).Value.Width = NumberForButtons[i].Item2 - NumberForButtons[i].Item1;
-                        tree.ElementAt(i).Value.EndTime = NumberForButtons[i].Item2;
-                        tree.ElementAt(i).Value.Row = NumberForButtons[i].Item3;
-                        tree.ElementAt(i).Value.Height = 40;
-                        tree.ElementAt(i).Value.Opacity = 0.7d;
-                        tree.ElementAt(i).Value.BorderThickness = new Thickness(1, 1, 1, 1);
-                        tree.ElementAt(i).Value.EndTime = NumberForButtons[i].Item2;
-                        tree.ElementAt(i).Value.Row = NumberForButtons[i].Item3;
-                        if (tree.Count() - difference == i && difference != 0)
-                        {
-                            tree.ElementAt(i).Value.Click += Button_Click1;
-                            difference--;
-                        }
-                        tree.ElementAt(i).Value.Background = new SolidColorBrush(Color.FromRgb((byte)rand.Next(256), (byte)rand.Next(256), (byte)rand.Next(256)));
-                        Canvas.SetTop(tree.ElementAt(i).Value, NumberForButtons[i].Item3);
-                        Canvas.SetLeft(tree.ElementAt(i).Value, NumberForButtons[i].Item1);
-                        Table.Children.Add(tree.ElementAt(i).Value);
+                        model.Tree.ElementAt(i).Value.Click += Button_Click1;
+                        difference--;
+                    }
+
+                    model.Tree.ElementAt(i).Value.Background = new SolidColorBrush(Color.FromRgb((byte)rand.Next(256), (byte)rand.Next(256), (byte)rand.Next(256)));
+                    //задаем верхнюю левую точку объекта на полотне
+                    Canvas.SetTop(model.Tree.ElementAt(i).Value, model.NumberForButtons[i].Item3);
+                    Canvas.SetLeft(model.Tree.ElementAt(i).Value, model.NumberForButtons[i].Item1);
+
+                    Table.Children.Add(model.Tree.ElementAt(i).Value);
                     }
             }
         }
-        private void Button_Click1(object sender, RoutedEventArgs e)
-        {
-            var but = (BlockButton)sender;
-            MessageBox.Show(String.Format("StartTime: {0}\nEndTime: {1}\nDescription: {2}",but.StartTime,but.EndTime,but.Content));
-        }
-
-        private void TextBlock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            this.DragMove();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
+        #endregion
     }
 }
